@@ -1,6 +1,9 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
 	gorm.Model
@@ -9,22 +12,32 @@ type User struct {
 	Token    string `json:"token"`
 }
 
-type UserResponse struct {
-	ID       uint   `json:"id"`
-	UserName string `json:"username"`
-	Token    string `json:"token,omitempty"`
-	CreateAt string `json:"created_at"`
+// type UserResponse struct {
+// 	ID       uint   `json:"id"`
+// 	UserName string `json:"username"`
+// 	Token    string `json:"token,omitempty"`
+// 	CreateAt string `json:"created_at"`
+// }
+
+// type UserTweetsLikesResponse struct {
+// 	User string `json:"user"`
+// 	// Tweets []TweetResponse `json:"tweets"`
+// }
+
+// func (user *User) UserTransformer() UserResponse {
+// 	return UserResponse{
+// 		ID:       user.ID,
+// 		UserName: user.Username,
+// 		CreateAt: user.CreatedAt.Format("2006-01-02 15:04:05"),
+// 	}
+// }
+
+func (u *User) HashPassword(password string) (string, err) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(hash), err
 }
 
-type UserTweetsLikesResponse struct {
-	User string `json:"user"`
-	// Tweets []TweetResponse `json:"tweets"`
-}
-
-func (user *User) UserTransformer() UserResponse {
-	return UserResponse{
-		ID:       user.ID,
-		UserName: user.Username,
-		CreateAt: user.CreatedAt.Format("2006-01-02 15:04:05"),
-	}
+func (u *User) checkPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
 }
