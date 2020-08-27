@@ -5,7 +5,7 @@
     app:
       container_name: soroha-api
       build:
-        context: ./app
+        context: .
         target: build
       volumes:
         - ./app:/app
@@ -28,8 +28,8 @@
       container_name: soroha_db
       image: mysql:8.0.13
       volumes:
-        - ./db/mysql/data:/var/lib/mysql
-        - ./db/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+        - ./dbdata/mysql/data:/var/lib/mysql
+        - ./dbdata/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       environment:
         MYSQL_USER: soroha_user
         MYSQL_ROOT_PASSWORD: password
