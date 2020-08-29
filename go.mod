@@ -3,7 +3,6 @@ module github.com/HideBa/soroha-api
 go 1.14
 
 require (
-	github.com/HideBa/soroha-api v0.0.0-20200827000133-7f2945f64af8
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-ini/ini v1.60.2
 	github.com/jinzhu/gorm v1.9.16

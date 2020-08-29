@@ -1,6 +1,9 @@
 package response
 
-import "github.com/HideBa/soroha-api/model"
+import (
+	"github.com/HideBa/soroha-api/model"
+	util "github.com/HideBa/soroha-api/utils"
+)
 
 type UserResponse struct {
 	User struct {
@@ -10,7 +13,8 @@ type UserResponse struct {
 }
 
 func NewUserResponse(userModel *model.User) *UserResponse {
-	r := &UserResponse{}
-	r.User.Username = userModel.Username
-	r.User.Token = userModel.Token
+	res := &UserResponse{}
+	res.User.Username = userModel.Username
+	res.User.Token = util.GenerateJWT(userModel.ID)
+	return res
 }

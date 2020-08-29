@@ -1,11 +1,11 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/HideBa/soroha-api/config"
 	"github.com/HideBa/soroha-api/db"
 	"github.com/HideBa/soroha-api/handler"
-
-	// "soroha-api/handler"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -17,6 +17,7 @@ func main() {
 	// userGroup := e.Group("/user")
 
 	config := config.GetConfig()
+	fmt.Println("---", config)
 	db.Init()
 	dbm := db.GetDB()
 	log.Print("-----------will try to migrate")

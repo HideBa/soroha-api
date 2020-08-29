@@ -31,7 +31,7 @@
         - ./dbdata/mysql/data:/var/lib/mysql
         - ./dbdata/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       environment:
-        MYSQL_USER: soroha_user
+        MYSQL_USER: root
         MYSQL_ROOT_PASSWORD: password
         MYSQL_DATABASE: soroha_db
       ports:
