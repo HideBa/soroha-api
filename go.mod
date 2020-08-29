@@ -1,4 +1,4 @@
-module github.com/Hideba/soroha-api
+module github.com/HideBa/soroha-api
 
 go 1.14
 
