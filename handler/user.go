@@ -6,6 +6,7 @@ import (
 
 	"github.com/HideBa/soroha-api/config"
 	"github.com/HideBa/soroha-api/model"
+	"github.com/HideBa/soroha-api/request"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
@@ -13,22 +14,12 @@ import (
 
 func (h *Handler) SignUp(c echo.Context) error {
 	var user model.User
-	if err := c.Bind(&user); err != nil {
+	req := &request.UserRegisterRequest{}
+	if err := req.Bind(c, &user); err != nil {
 		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: err.Error}
 	}
-	if user.Username == "" || user.Password == "" {
-		return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid email or password"}
-	}
-	hash, hashError := h.hashPassword(user.Password)
-	if hashError != nil {
-		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: hashError}
-	}
-	user.Password = hash
-	if err := h.DB.Create(&user).Error; err != nil {
-		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: err}
-	}
 
-	return c.JSON(http.StatusCreated, map[string]model.UserResponse{"user": user.UserTransformer()})
+	// return c.JSON(http.StatusCreated, newUserResponse(&u))
 }
 
 func (h *Handler) Login(c echo.Context) error {

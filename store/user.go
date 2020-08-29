@@ -1,6 +1,7 @@
 package store
 
 import (
+	"github.com/HideBa/soroha-api/model"
 	"github.com/jinzhu/gorm"
 )
 
@@ -14,6 +15,32 @@ func NewUserStore(db *gorm.DB) *UserStore {
 	}
 }
 
-// func (us *UserStore) GetByID(id int) (*model.User, error) {
+func (userStore *UserStore) GetByID(id uint) (*model.User, error) {
+	var m model.User
+	if err := userStore.db.First(&m, id).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &m, nil
+}
 
-// }
+func (userStore *UserStore) GetByUsername(username string) (*model.User, error) {
+	var m model.User
+	if err := userStore.db.Where(&model.User{Username: username}).First(&m).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &m, nil
+}
+
+func (userStore *UserStore) Create(u *model.User) (err error) {
+	return userStore.db.Create(u).Error
+}
+
+func (userStore *UserStore) Update(u *model.User) (err error) {
+	return userStore.db.Model(u).Update(u).Error
+}

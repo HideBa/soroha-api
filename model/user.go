@@ -1,6 +1,10 @@
 package model
 
 import (
+	"time"
+
+	"github.com/Hideba/soroha-api/config"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -32,7 +36,7 @@ type User struct {
 // 	}
 // }
 
-func (u *User) HashPassword(password string) (string, err) {
+func (u *User) HashPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(hash), err
 }
@@ -40,4 +44,12 @@ func (u *User) HashPassword(password string) (string, err) {
 func (u *User) checkPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
+}
+
+func (u *User) GenerateJWT() string {
+	token := jwt.New(jwt.SigningMethodES256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = u.ID
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	u.token, err = token.SignedString([]byte())
 }
