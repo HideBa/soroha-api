@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"github.com/HideBa/soroha-api/config"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
@@ -30,5 +31,6 @@ func (u *User) GenerateJWT() string {
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = u.ID
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-	u.Token, err = token.SignedString([]byte())
+	u.Token, _ = token.SignedString([]byte(config.GetConfig().Server.KEY))
+	return u.Token
 }
