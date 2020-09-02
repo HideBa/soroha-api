@@ -6,6 +6,7 @@ import (
 	"github.com/HideBa/soroha-api/config"
 	"github.com/HideBa/soroha-api/db"
 	"github.com/HideBa/soroha-api/handler"
+	"github.com/HideBa/soroha-api/store"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -21,8 +22,10 @@ func main() {
 	db.Init()
 	dbm := db.GetDB()
 	log.Print("-----------will try to migrate")
-	h := &handler.Handler{DB: dbm}
 	db.AutoMigrate(dbm)
+
+	userStore := store.NewUserStore(dbm)
+	h := handler.NewHandler(userStore)
 	e.Logger.SetLevel(log.ERROR)
 	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		SigningKey: []byte(config.Server.KEY),

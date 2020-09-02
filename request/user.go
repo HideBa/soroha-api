@@ -12,16 +12,16 @@ type UserRegisterRequest struct {
 	} `json:"user"`
 }
 
-func (userRequest *UserRegisterRequest) Bind(c echo.Context, user *model.User) error {
-	if err := c.Bind(userRequest); err != nil {
+func (req *UserRegisterRequest) Bind(c echo.Context, user *model.User) error {
+	if err := c.Bind(req); err != nil {
 		return err
 	}
 
-	if err := c.Validate(userRequest); err != nil {
-		return err
-	}
-	user.Username = userRequest.User.Username
-	h, err := user.HashPassword(userRequest.User.Password)
+	// if err := c.Validate(req); err != nil {
+	// 	return err
+	// }
+	user.Username = req.User.Username
+	h, err := user.HashPassword(req.User.Password)
 	if err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/HideBa/soroha-api/model"
 	"github.com/HideBa/soroha-api/request"
 	"github.com/HideBa/soroha-api/response"
+	util "github.com/HideBa/soroha-api/utils"
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,7 +17,9 @@ func (h *Handler) SignUp(c echo.Context) error {
 	if err := req.Bind(c, &user); err != nil {
 		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: err.Error}
 	}
-
+	if err := h.userStore.Create(&user); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
 	return c.JSON(http.StatusCreated, response.NewUserResponse(&user))
 }
 
