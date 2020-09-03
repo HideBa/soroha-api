@@ -8,7 +8,6 @@ import (
 	"github.com/HideBa/soroha-api/response"
 	util "github.com/HideBa/soroha-api/utils"
 	"github.com/labstack/echo"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func (h *Handler) SignUp(c echo.Context) error {
@@ -42,12 +41,12 @@ func (h *Handler) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.NewUserResponse(u))
 }
 
-func (h *Handler) hashPassword(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(hash), err
-}
+// func (h *Handler) hashPassword(password string) (string, error) {
+// 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+// 	return string(hash), err
+// }
 
-func (h *Handler) validatePassword(hash string, password string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err
-}
+// func (h *Handler) validatePassword(hash string, password string) error {
+// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+// 	return err
+// }

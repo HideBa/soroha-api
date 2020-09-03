@@ -40,8 +40,8 @@ func (req *UserLoginRequest) Bind(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return err
 	}
-	if err := c.Validate(req); err != nil {
-		return err
-	}
+	// if err := c.Validate(req); err != nil {
+	// 	return err
+	// }
 	return nil
 }

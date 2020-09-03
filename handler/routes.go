@@ -1,12 +1,18 @@
 package handler
 
-import "github.com/labstack/echo"
+import (
+	"github.com/labstack/echo"
+)
 
 func (h *Handler) Register(v1 *echo.Group) {
-	jwtMiddleware := midleware
+	// jwtMiddleware := middleware.JWT(config.GetConfig())
 	v1.GET("", h.MainPage)
-
 	guestUsers := v1.Group("/users")
-	guestUsers.POST("", h.SignUp)
+	guestUsers.POST("/signup", h.SignUp)
 	guestUsers.POST("/login", h.Login)
+
+	// user := v1.Group("user", jwtMiddleware)
+	// fmt.Println(user)
+	// user.GET("", h.CurrentUser)
+	// user.PATCH("", h.UpdateUser)
 }
