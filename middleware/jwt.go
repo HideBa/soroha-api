@@ -23,5 +23,20 @@ var (
 func JWT(key interface{}) echo.MiddlewareFunc {
 	cfg := JWTConfig{}
 	cfg.SigningKey = key
-	return JWTConfig(cfg)
+	return JWTWithConfig(cfg)
+}
+
+func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
+	extractor := jwtFrom
+}
+
+func jwtFromHeader(header string, authScheme string) jwtExtractor {
+	return func(c echo.Context) (string, error) {
+		auth := c.Request().Header.Get(header)
+		l := len(authScheme)
+		if len(auth) > l+1 && auth[:l] == authScheme {
+			return auth[l+1:], nil
+		}
+		return "", ErrJWTMissing
+	}
 }
