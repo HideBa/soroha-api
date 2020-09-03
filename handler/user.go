@@ -23,37 +23,24 @@ func (h *Handler) SignUp(c echo.Context) error {
 	return c.JSON(http.StatusCreated, response.NewUserResponse(&user))
 }
 
-// func (h *Handler) Login(c echo.Context) error {
-// 	var user model.User
+func (h *Handler) Login(c echo.Context) error {
+	req := &request.UserLoginRequest{}
+	if err := req.Bind(c); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
+	u, err := h.userStore.GetByUsername(req.User.Username)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, util.NewError(err))
+	}
+	if u == nil {
+		return c.JSON(http.StatusForbidden, util.NewError(err))
+	}
+	if !u.CheckPassword(req.User.Password) {
+		return &echo.HTTPError{Code: http.StatusUnauthorized, Message: "failure to authenticate"}
+	}
 
-// 	if err := c.Bind(&user); err != nil {
-// 		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: err}
-// 	}
-// 	record, err := h.findUserByName(user.Username)
-// 	if err != nil {
-// 		return &echo.HTTPError{Code: http.StatusUnauthorized, Message: err}
-// 	}
-// 	if err := h.checkPassword(record.Password, user.Password); err != nil {
-// 		return &echo.HTTPError{Code: http.StatusUnauthorized, Message: err}
-// 	}
-// 	token := jwt.New(jwt.SigningMethodES256)
-// 	claims := token.Claims.(jwt.MapClaims)
-// 	claims["id"] = user.ID
-// 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-
-// 	user.Token, err = token.SignedString([]byte(config.GetConfig().Server.KEY))
-// 	if err != nil {
-// 		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: err}
-// 	}
-
-// 	cookies := &http.Cookie{}
-// 	cookies.Name = "JWTcookie"
-// 	cookies.Value = user.Token
-// 	cookies.Expires = time.Now().Add(time.Hour * 48)
-// 	c.SetCookie(cookies)
-// 	return c.JSON(http.StatusOK, record.UserTransformer())
-
-// }
+	return c.JSON(http.StatusOK, response.NewUserResponse(u))
+}
 
 func (h *Handler) hashPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

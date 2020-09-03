@@ -15,7 +15,7 @@ import (
 
 func main() {
 	e := echo.New()
-	// userGroup := e.Group("/user")
+	apiV1 := e.Group("/api/v1")
 
 	config := config.GetConfig()
 	fmt.Println("---", config)
@@ -27,22 +27,21 @@ func main() {
 	userStore := store.NewUserStore(dbm)
 	h := handler.NewHandler(userStore)
 	e.Logger.SetLevel(log.ERROR)
-	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey: []byte(config.Server.KEY),
-		Skipper: func(c echo.Context) bool {
-			if c.Path() == "/login" || c.Path() == "/signup" || c.Path() == "/" {
-				return true
-			}
-			return false
-		},
-	}))
+	// e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+	// 	SigningKey: []byte(config.Server.KEY),
+	// 	Skipper: func(c echo.Context) bool {
+	// 		if c.Path() == "api/v1/users/login" || c.Path() == "api/v1/users" || c.Path() == "api/v1" {
+	// 			return true
+	// 		}
+	// 		return false
+	// 	},
+	// }))
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", h.MainPage)
-	e.POST("/signup", h.SignUp)
-
+	h.Register(apiV1)
+	// e.POST("/signup", h.SignUp)
 	// e.Logger.Fatal(e.Start(":" + config.Server.PORT))
 	e.Logger.Fatal(e.Start(":3000"))
 }

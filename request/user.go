@@ -28,3 +28,20 @@ func (req *UserRegisterRequest) Bind(c echo.Context, user *model.User) error {
 	user.Password = h
 	return nil
 }
+
+type UserLoginRequest struct {
+	User struct {
+		Username string `json:"username" validate:"required"`
+		Password string `json:"password" validate:"required"`
+	} `json:"user"`
+}
+
+func (req *UserLoginRequest) Bind(c echo.Context) error {
+	if err := c.Bind(req); err != nil {
+		return err
+	}
+	if err := c.Validate(req); err != nil {
+		return err
+	}
+	return nil
+}
