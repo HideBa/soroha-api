@@ -30,10 +30,11 @@
       volumes:
         - ./dbdata/mysql/data:/var/lib/mysql
         - ./dbdata/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+        - ./dbdata/mysql/sql:/docker-entrypoint-initdb.d
       environment:
-        MYSQL_USER: root
-        MYSQL_ROOT_PASSWORD: password
+        MYSQL_USER: soroha_user
         MYSQL_DATABASE: soroha_db
+        MYSQL_PASSWORD: password
       ports:
         - 3306:3306
       tty: true
