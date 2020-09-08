@@ -5,7 +5,7 @@ import (
 )
 
 func (h *Handler) Register(v1 *echo.Group) {
-	// jwtMiddleware := middleware.JWT(config.GetConfig())
+	// jwtMiddleware := router.JWT(config.GetConfig())
 	v1.GET("", h.MainPage)
 	guestUsers := v1.Group("/users")
 	guestUsers.POST("/signup", h.SignUp)

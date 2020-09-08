@@ -4,6 +4,7 @@ import (
 	"github.com/HideBa/soroha-api/config"
 	"github.com/HideBa/soroha-api/db"
 	"github.com/HideBa/soroha-api/handler"
+	"github.com/HideBa/soroha-api/router"
 	"github.com/HideBa/soroha-api/store"
 
 	"github.com/labstack/echo"
@@ -23,15 +24,6 @@ func main() {
 	userStore := store.NewUserStore(dbm)
 	h := handler.NewHandler(userStore)
 	e.Logger.SetLevel(log.ERROR)
-	// e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-	// 	SigningKey: []byte(config.Server.KEY),
-	// 	Skipper: func(c echo.Context) bool {
-	// 		if c.Path() == "api/v1/users/login" || c.Path() == "api/v1/users" || c.Path() == "api/v1" {
-	// 			return true
-	// 		}
-	// 		return false
-	// 	},
-	// }))
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -39,6 +31,7 @@ func main() {
 		AllowOrigins: []string{"*"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
+	e.Validator = router.NewValidator()
 
 	h.Register(apiV1)
 	e.Logger.Fatal(e.Start(":" + config.Server.PORT))
