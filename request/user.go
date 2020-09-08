@@ -8,7 +8,7 @@ import (
 type UserRegisterRequest struct {
 	User struct {
 		Username string `json:"username" validate:"required"`
-		Password string `json:"passwordd" validate:"required"`
+		Password string `json:"password" validate:"required"`
 	} `json:"user"`
 }
 
@@ -16,7 +16,7 @@ func (req *UserRegisterRequest) Bind(c echo.Context, user *model.User) error {
 	if err := c.Bind(req); err != nil {
 		return err
 	}
-
+	// TODO: must validate later
 	// if err := c.Validate(req); err != nil {
 	// 	return err
 	// }

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/HideBa/soroha-api/config"
 	"github.com/HideBa/soroha-api/db"
 	"github.com/HideBa/soroha-api/handler"
@@ -18,10 +16,8 @@ func main() {
 	apiV1 := e.Group("/api/v1")
 
 	config := config.GetConfig()
-	fmt.Println("---", config)
 	db.Init()
 	dbm := db.GetDB()
-	log.Print("-----------will try to migrate")
 	db.AutoMigrate(dbm)
 
 	userStore := store.NewUserStore(dbm)
@@ -39,9 +35,11 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 
 	h.Register(apiV1)
-	// e.POST("/signup", h.SignUp)
-	// e.Logger.Fatal(e.Start(":" + config.Server.PORT))
-	e.Logger.Fatal(e.Start(":3000"))
+	e.Logger.Fatal(e.Start(":" + config.Server.PORT))
 }

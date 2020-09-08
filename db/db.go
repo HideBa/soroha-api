@@ -22,7 +22,6 @@ func Init() {
 	if err != nil {
 		log.Fatal("failured to connect with db")
 	}
-	log.Println("success to conenct with db -------")
 }
 
 func GetDB() *gorm.DB {
