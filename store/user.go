@@ -1,8 +1,6 @@
 package store
 
 import (
-	"fmt"
-
 	"github.com/HideBa/soroha-api/model"
 	"github.com/jinzhu/gorm"
 )
@@ -40,7 +38,6 @@ func (userStore *UserStore) GetByUsername(username string) (*model.User, error) 
 }
 
 func (userStore *UserStore) Create(u *model.User) (err error) {
-	fmt.Println("-------", u)
 	return userStore.db.Create(u).Error
 }
 
