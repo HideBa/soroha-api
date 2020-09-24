@@ -2,7 +2,7 @@ package request
 
 import (
 	"github.com/HideBa/soroha-api/model"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type UserRegisterRequest struct {

@@ -3,12 +3,14 @@ package handler
 import (
 	"net/http"
 
+	"github.com/HideBa/soroha-api/expense"
 	"github.com/HideBa/soroha-api/user"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
-	userStore user.Store
+	userStore    user.Store
+	expenseStore expense.Store
 }
 
 func (h *Handler) MainPage(c echo.Context) error {

@@ -1,6 +1,6 @@
 package util
 
-import "github.com/labstack/echo"
+import "github.com/labstack/echo/v4"
 
 type Error struct {
 	Errors map[string]interface{} `json:"errors"`

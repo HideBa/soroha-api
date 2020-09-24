@@ -7,7 +7,7 @@ import (
 	"github.com/HideBa/soroha-api/request"
 	"github.com/HideBa/soroha-api/response"
 	util "github.com/HideBa/soroha-api/utils"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func (h *Handler) SignUp(c echo.Context) error {
@@ -39,4 +39,12 @@ func (h *Handler) Login(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response.NewUserResponse(u))
+}
+
+func userIDFromToken(c echo.Context) uint {
+	id, ok := c.Get("user").(uint)
+	if !ok {
+		return 0
+	}
+	return id
 }

@@ -9,6 +9,7 @@ type User struct {
 	gorm.Model
 	Username string `gorm:"unique_index;not null" json:"username"`
 	Password string `gorm:"not null" json:"password"`
+	Expense  []Expense
 }
 
 func (u *User) HashPassword(password string) (string, error) {
