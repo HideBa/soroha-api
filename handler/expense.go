@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/HideBa/soroha-api/model"
@@ -24,4 +25,21 @@ func (h *Handler) CreateExpense(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, response.NewExpenseResponse(c, &expense))
+}
+
+func (h *Handler) Expenses(c echo.Context) error {
+	var (
+		expenses []model.Expense
+		count    int
+		err      error
+	)
+
+	userID := userIDFromToken(c)
+	fmt.Println("-------", userID)
+	expenses, count, err = h.expenseStore.List(10)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, nil)
+	}
+
+	return c.JSON(http.StatusOK, response.NewExponseListResponse(h.userStore, userID, expenses, count))
 }

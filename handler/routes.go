@@ -41,4 +41,5 @@ func (h *Handler) Register(v1 *echo.Group) {
 		}, SigningKey: []byte(config.GetConfig().Server.KEY),
 	}))
 	expenses.POST("", h.CreateExpense)
+	expenses.GET("", h.Expenses)
 }

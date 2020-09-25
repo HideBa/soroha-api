@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/HideBa/soroha-api/model"
+	"github.com/HideBa/soroha-api/user"
 	"github.com/labstack/echo/v4"
 )
 
@@ -22,6 +23,11 @@ type singleExpenseResponse struct {
 	Expense expenseResponse `json:"expense"`
 }
 
+type expenseListResponse struct {
+	Expenses      []*expenseResponse `json:"expenses"`
+	ExpensesCount int                `json:"expensesCount"`
+}
+
 func NewExpenseResponse(c echo.Context, e *model.Expense) *singleExpenseResponse {
 	expenseRes := expenseResponse{}
 	expenseRes.Price = e.Price
@@ -31,4 +37,20 @@ func NewExpenseResponse(c echo.Context, e *model.Expense) *singleExpenseResponse
 	expenseRes.UpdatedAt = e.UpdatedAt
 	expenseRes.User.Username = e.User.Username
 	return &singleExpenseResponse{expenseRes}
+}
+
+func NewExponseListResponse(us user.Store, userID uint, expenses []model.Expense, count int) *expenseListResponse {
+	res := new(expenseListResponse)
+	res.Expenses = make([]*expenseResponse, 0)
+	for _, expense := range expenses {
+		er := new(expenseResponse)
+		er.Price = expense.Price
+		er.Comment = expense.Comment
+		er.CreatedAt = expense.CreatedAt
+		er.UpdatedAt = expense.UpdatedAt
+		er.User.Username = expense.User.Username
+		res.Expenses = append(res.Expenses, er)
+	}
+	res.ExpensesCount = count
+	return res
 }

@@ -31,7 +31,7 @@ func (expenseStore *ExpenseStore) CreateExpense(e *model.Expense) (err error) {
 	// return expenseStore.db.Create(e).Error
 }
 
-func (expenseStore *ExpenseStore) GetList(limit int) ([]model.Expense, int, error) {
+func (expenseStore *ExpenseStore) List(limit int) ([]model.Expense, int, error) {
 	var (
 		expenses []model.Expense
 		count    int
