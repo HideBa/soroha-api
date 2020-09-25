@@ -17,7 +17,18 @@ func NewExpenseStore(db *gorm.DB) *ExpenseStore {
 
 func (expenseStore *ExpenseStore) CreateExpense(e *model.Expense) (err error) {
 	//must implement transaction manually when expense has many to many relations with other models
-	return expenseStore.db.Create(e).Error
+	tx := expenseStore.db.Begin()
+	if err := tx.Create(&e).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Where(e.ID).Preload("User").Find(&e).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
+	// return expenseStore.db.Create(e).Error
 }
 
 func (expenseStore *ExpenseStore) GetList(limit int) ([]model.Expense, int, error) {

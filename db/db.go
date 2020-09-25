@@ -17,7 +17,6 @@ func Init() {
 	cfg := config.GetConfig()
 	// Refactor later:enable to use container DB
 	url := fmt.Sprintf("%s:%s@(%s)/%s?charset=utf8&parseTime=True&loc=Local", cfg.DB.DbUser, cfg.DB.DbPass, cfg.DB.DbHost, cfg.DB.DbName)
-	fmt.Print("--", url)
 	db, err = gorm.Open("mysql", url)
 	if err != nil {
 		log.Fatal("failured to connect with db")

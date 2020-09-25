@@ -8,8 +8,8 @@ import (
 )
 
 type expenseResponse struct {
-	Price     int       `json:"price"`
-	UsedDate  time.Time `json:"usedDate"`
+	Price int `json:"price"`
+	// UsedDate  time.Time `json:"usedDate"`
 	Comment   string    `json""comment"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt`
@@ -25,7 +25,7 @@ type singleExpenseResponse struct {
 func NewExpenseResponse(c echo.Context, e *model.Expense) *singleExpenseResponse {
 	expenseRes := expenseResponse{}
 	expenseRes.Price = e.Price
-	expenseRes.UsedDate = e.UsedDate
+	// expenseRes.UsedDate = e.UsedDate
 	expenseRes.Comment = e.Comment
 	expenseRes.CreatedAt = e.CreatedAt
 	expenseRes.UpdatedAt = e.UpdatedAt

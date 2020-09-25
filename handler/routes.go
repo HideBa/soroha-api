@@ -1,14 +1,17 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/HideBa/soroha-api/config"
-	"github.com/HideBa/soroha-api/router"
+	"github.com/HideBa/soroha-api/router/middleware"
 	"github.com/labstack/echo/v4"
 	// "github.com/labstack/echo/v4/middleware"
 )
 
 func (h *Handler) Register(v1 *echo.Group) {
-	// jwtMiddleware := router.JWT(config.GetConfig())
+	jwtMiddleware := middleware.JWT(config.GetConfig())
+	fmt.Println(jwtMiddleware)
 	v1.GET("", h.MainPage)
 	guestUsers := v1.Group("/users")
 	guestUsers.POST("/signup", h.SignUp)
@@ -29,7 +32,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	// 		return false
 	// 	},
 	// }))
-	expenses := v1.Group("/expenses", router.JWTWithConfig(router.JWTConfig{
+	expenses := v1.Group("/expenses", middleware.JWTWithConfig(middleware.JWTConfig{
 		Skipper: func(c echo.Context) bool {
 			if c.Request().Method == "GET" {
 				return true

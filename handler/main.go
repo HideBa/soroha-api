@@ -21,8 +21,9 @@ func (h *Handler) MainPage(c echo.Context) error {
 	return c.String(http.StatusOK, "Hello")
 }
 
-func NewHandler(us user.Store) *Handler {
+func NewHandler(us user.Store, es expense.Store) *Handler {
 	return &Handler{
-		userStore: us,
+		userStore:    us,
+		expenseStore: es,
 	}
 }

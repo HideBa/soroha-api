@@ -1,17 +1,15 @@
 package request
 
 import (
-	"time"
-
 	"github.com/HideBa/soroha-api/model"
 	"github.com/labstack/echo/v4"
 )
 
 type ExpenseCreateRequest struct {
 	Expense struct {
-		Price    int       `json:"price" validate:"required"`
-		UsedDate time.Time `json:"usedDate" validate:"required"`
-		Comment  string    `json:"comment, omitempty"`
+		Price int `json:"price" validate:"required"`
+		// UsedDate time.Time `json:"usedDate" validate:"required"`
+		Comment string `json:"comment, omitempty"`
 	} `json:"expense"`
 }
 
@@ -23,6 +21,7 @@ func (req *ExpenseCreateRequest) Bind(c echo.Context, e *model.Expense) error {
 	// 	return err
 	// }
 	e.Price = req.Expense.Price
-	e.UsedDate = req.Expense.UsedDate
+	// e.UsedDate = req.Expense.UsedDate
+	e.Comment = req.Expense.Comment
 	return nil
 }

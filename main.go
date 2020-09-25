@@ -22,7 +22,8 @@ func main() {
 	db.AutoMigrate(dbm)
 
 	userStore := store.NewUserStore(dbm)
-	h := handler.NewHandler(userStore)
+	expenseStore := store.NewExpenseStore(dbm)
+	h := handler.NewHandler(userStore, expenseStore)
 	e.Logger.SetLevel(log.ERROR)
 
 	e.Use(middleware.Logger())
