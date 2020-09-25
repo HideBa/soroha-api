@@ -10,7 +10,7 @@ import (
 type ExpenseCreateRequest struct {
 	Expense struct {
 		Price    int       `json:"price" validate:"required"`
-		UsedDate time.Time `json:"usedTime" validate:"required"`
+		UsedDate time.Time `json:"usedDate" validate:"required"`
 		Comment  string    `json:"comment, omitempty"`
 	} `json:"expense"`
 }
