@@ -70,4 +70,8 @@ func (expenseStore *ExpenseStore) UpdateExpense(e *model.Expense) (err error) {
 	return tx.Commit().Error
 }
 
+func (expenseStore *ExpenseStore) DeleteExpense(e *model.Expense) (err error) {
+	return expenseStore.db.Delete(e).Error
+}
+
 // func (expenseStore *ExpenseStore) ListByUser(userID uint, limit int)

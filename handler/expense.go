@@ -70,3 +70,25 @@ func (h *Handler) UpdateExpense(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response.NewExpenseResponse(c, expense))
 }
+
+func (h *Handler) DeleteExpense(c echo.Context) error {
+	slugStr := c.Param("slug")
+	slugUUID, err := uuid.Parse(slugStr)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, util.NewError(err))
+	}
+	expense, err := h.expenseStore.GetUserExpenseBySlug(userIDFromToken(c), slugUUID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, util.NewError(err))
+	}
+	if expense == nil {
+		return c.JSON(http.StatusNotFound, util.NotFound())
+	}
+
+	err = h.expenseStore.DeleteExpense(expense)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, util.NewError(err))
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"result": "ok"})
+}

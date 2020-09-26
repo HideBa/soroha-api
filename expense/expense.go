@@ -10,4 +10,5 @@ type Store interface {
 	List(limit int) ([]model.Expense, int, error)
 	GetUserExpenseBySlug(userID uint, slug uuid.UUID) (*model.Expense, error)
 	UpdateExpense(*model.Expense) error
+	DeleteExpense(*model.Expense) error
 }
