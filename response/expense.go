@@ -5,11 +5,13 @@ import (
 
 	"github.com/HideBa/soroha-api/model"
 	"github.com/HideBa/soroha-api/user"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type expenseResponse struct {
-	Price int `json:"price"`
+	Slug  uuid.UUID `json:"slug"`
+	Price int       `json:"price"`
 	// UsedDate  time.Time `json:"usedDate"`
 	Comment   string    `json""comment"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -30,6 +32,7 @@ type expenseListResponse struct {
 
 func NewExpenseResponse(c echo.Context, e *model.Expense) *singleExpenseResponse {
 	expenseRes := expenseResponse{}
+	expenseRes.Slug = e.Slug
 	expenseRes.Price = e.Price
 	// expenseRes.UsedDate = e.UsedDate
 	expenseRes.Comment = e.Comment
@@ -44,6 +47,7 @@ func NewExponseListResponse(us user.Store, userID uint, expenses []model.Expense
 	res.Expenses = make([]*expenseResponse, 0)
 	for _, expense := range expenses {
 		er := new(expenseResponse)
+		er.Slug = expense.Slug
 		er.Price = expense.Price
 		er.Comment = expense.Comment
 		er.CreatedAt = expense.CreatedAt

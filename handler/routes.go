@@ -42,4 +42,6 @@ func (h *Handler) Register(v1 *echo.Group) {
 	}))
 	expenses.POST("", h.CreateExpense)
 	expenses.GET("", h.Expenses)
+	expenses.PUT("/:slug", h.UpdateExpense)
+	// expenses.DELETE("/:slug", h.DeleteExpense)
 }

@@ -1,7 +1,10 @@
 package request
 
 import (
+	"fmt"
+
 	"github.com/HideBa/soroha-api/model"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,6 +16,13 @@ type ExpenseCreateRequest struct {
 	} `json:"expense"`
 }
 
+type ExpenseUpdateRequest struct {
+	Expense struct {
+		Price   int    `json:"price"`
+		Comment string `json:"comment"`
+	}
+}
+
 func (req *ExpenseCreateRequest) Bind(c echo.Context, e *model.Expense) error {
 	if err := c.Bind(req); err != nil {
 		return err
@@ -20,8 +30,29 @@ func (req *ExpenseCreateRequest) Bind(c echo.Context, e *model.Expense) error {
 	// if err := c.Validate(req); err != nil {
 	// 	return err
 	// }
+	uuid, _ := uuid.NewUUID()
+	fmt.Println("------", uuid)
+	// uuidStr := uuid
+	e.Slug = uuid
 	e.Price = req.Expense.Price
 	// e.UsedDate = req.Expense.UsedDate
+	e.Comment = req.Expense.Comment
+	return nil
+}
+
+func (req *ExpenseUpdateRequest) ConvertModelToRequest(e *model.Expense) {
+	req.Expense.Price = e.Price
+	req.Expense.Comment = e.Comment
+}
+
+func (req *ExpenseUpdateRequest) Bind(c echo.Context, e *model.Expense) error {
+	if err := c.Bind(req); err != nil {
+		return err
+	}
+	if err := c.Validate(req); err != nil {
+		return err
+	}
+	e.Price = req.Expense.Price
 	e.Comment = req.Expense.Comment
 	return nil
 }
