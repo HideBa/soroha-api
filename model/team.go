@@ -5,7 +5,7 @@ import "github.com/jinzhu/gorm"
 type (
 	Team struct {
 		gorm.Model
-		TeamName string `gorm:"not null" json:"teamname"`
+		TeamName string `gorm:"unique_index;not null" json:"teamName"`
 		Users    []User `gorm:"many2many:user_teams" json:"name"`
 	}
 )

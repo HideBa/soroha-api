@@ -10,4 +10,5 @@ type Store interface {
 
 	CreateTeam(*model.Team, uint) error
 	TeamsList(uint, int) ([]model.Team, error)
+	TeamUsersList(teamName string) (model.Team, []model.User, error)
 }

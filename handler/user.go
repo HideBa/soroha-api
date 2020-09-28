@@ -87,3 +87,21 @@ func (h *Handler) TeamsList(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response.TeamsListResponse(h.userStore, userID, teams))
 }
+
+func (h *Handler) TeamUsersList(c echo.Context) error {
+	var (
+		team  model.Team
+		users []model.User
+		err   error
+	)
+
+	teamName := c.Param("name")
+
+	team, users, err = h.userStore.TeamUsersList(teamName)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, nil)
+	}
+
+	return c.JSON(http.StatusOK, response.TeamUsersListResponse(team, users))
+}

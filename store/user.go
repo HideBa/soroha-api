@@ -68,3 +68,19 @@ func (userStore *UserStore) TeamsList(userID uint, limit int) ([]model.Team, err
 
 	return teams, nil
 }
+
+func (userStore *UserStore) TeamUsersList(teamName string) (model.Team, []model.User, error) {
+	var (
+		users []model.User
+		team  model.Team
+	)
+
+	err := userStore.db.Where("team_name = ?", teamName).First(&team).Error
+	if err != nil {
+		return team, nil, err
+	}
+
+	userStore.db.Model(&team).Association("Users").Find(&users)
+
+	return team, users, nil
+}

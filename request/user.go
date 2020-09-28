@@ -48,7 +48,7 @@ func (req *UserLoginRequest) Bind(c echo.Context) error {
 
 type TeamCreateRequest struct {
 	Team struct {
-		TeamName string `json:"teamname" validate:"required"`
+		TeamName string `json:"teamName" validate:"required"`
 	} `json:"team"`
 }
 
