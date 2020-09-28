@@ -10,16 +10,18 @@ import (
 )
 
 func (h *Handler) Register(v1 *echo.Group) {
-	jwtMiddleware := middleware.JWT(config.GetConfig())
+	jwtMiddleware := middleware.JWT([]byte(config.GetConfig().Server.KEY))
 	fmt.Println(jwtMiddleware)
 	v1.GET("", h.MainPage)
 	guestUsers := v1.Group("/users")
 	guestUsers.POST("/signup", h.SignUp)
 	guestUsers.POST("/signin", h.Login)
 
-	// user := v1.Group("user", jwtMiddleware)
-	// fmt.Println(user)
-	// user.GET("", h.CurrentUser)
+	user := v1.Group("/user", jwtMiddleware)
+	user.GET("", h.CurrentUser)
+	user.POST("/teams", h.CreateTeam)
+	user.GET("/teams", h.TeamsList)
+	// user.GET("/teams/users", h.TeamUsersList)
 	// user.PATCH("", h.UpdateUser)
 	// user := v1.Group("/user")
 

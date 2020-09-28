@@ -10,6 +10,7 @@ type User struct {
 	Username string `gorm:"unique_index;not null" json:"username"`
 	Password string `gorm:"not null" json:"password"`
 	Expense  []Expense
+	Teams    []Team `gorm:"many2many:user_teams"`
 }
 
 func (u *User) HashPassword(password string) (string, error) {

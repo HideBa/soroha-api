@@ -44,3 +44,27 @@ func (userStore *UserStore) Create(u *model.User) (err error) {
 func (userStore *UserStore) Update(u *model.User) (err error) {
 	return userStore.db.Model(u).Update(u).Error
 }
+
+func (userStore *UserStore) CreateTeam(teamModel *model.Team, userID uint) (err error) {
+	user := model.User{}
+	user.ID = userID
+	if err := userStore.db.Create(teamModel).Error; err != nil {
+		return err
+	}
+	return userStore.db.Model(teamModel).Association("Users").Append(&user).Error
+}
+
+func (userStore *UserStore) TeamsList(userID uint, limit int) ([]model.Team, error) {
+	var (
+		user  model.User
+		teams []model.Team
+	)
+	err := userStore.db.First(&user, userID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	userStore.db.Preload("Users", "id = ?", userID).Find(&teams)
+
+	return teams, nil
+}

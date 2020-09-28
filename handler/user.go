@@ -41,10 +41,49 @@ func (h *Handler) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.NewUserResponse(u))
 }
 
+func (h *Handler) CurrentUser(c echo.Context) error {
+	u, err := h.userStore.GetByID(userIDFromToken(c))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, util.NewError(err))
+	}
+	if u == nil {
+		return c.JSON(http.StatusNotFound, util.NotFound())
+	}
+
+	return c.JSON(http.StatusOK, response.NewUserResponse(u))
+}
+
 func userIDFromToken(c echo.Context) uint {
 	id, ok := c.Get("user").(uint)
 	if !ok {
 		return 0
 	}
 	return id
+}
+
+func (h *Handler) CreateTeam(c echo.Context) error {
+	var teamModel model.Team
+	req := &request.TeamCreateRequest{}
+	if err := req.Bind(c, &teamModel); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
+	if err := h.userStore.CreateTeam(&teamModel, userIDFromToken(c)); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
+	return c.JSON(http.StatusOK, response.NewTeamResponse(&teamModel))
+}
+
+func (h *Handler) TeamsList(c echo.Context) error {
+	var (
+		teams []model.Team
+		err   error
+	)
+
+	userID := userIDFromToken(c)
+	teams, err = h.userStore.TeamsList(userID, 10)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, nil)
+	}
+
+	return c.JSON(http.StatusOK, response.TeamsListResponse(h.userStore, userID, teams))
 }

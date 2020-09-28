@@ -45,3 +45,20 @@ func (req *UserLoginRequest) Bind(c echo.Context) error {
 	// }
 	return nil
 }
+
+type TeamCreateRequest struct {
+	Team struct {
+		TeamName string `json:"teamname" validate:"required"`
+	} `json:"team"`
+}
+
+type TeamUsersListRequest struct {
+}
+
+func (req *TeamCreateRequest) Bind(c echo.Context, team *model.Team) error {
+	if err := c.Bind(req); err != nil {
+		return err
+	}
+	team.TeamName = req.Team.TeamName
+	return nil
+}

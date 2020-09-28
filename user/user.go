@@ -7,4 +7,7 @@ type Store interface {
 	GetByUsername(string) (*model.User, error)
 	Create(*model.User) error
 	Update(*model.User) error
+
+	CreateTeam(*model.Team, uint) error
+	TeamsList(uint, int) ([]model.Team, error)
 }
