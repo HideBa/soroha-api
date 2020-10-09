@@ -9,6 +9,8 @@ type Store interface {
 	Update(*model.User) error
 
 	CreateTeam(*model.Team, uint) error
+	TeamByName(string) (*model.Team, error)
 	TeamsList(uint, int) ([]model.Team, error)
 	TeamUsersList(teamName string) (model.Team, []model.User, error)
+	AddUserOnTeam(*model.Team, []string) ([]model.User, error)
 }

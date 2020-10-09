@@ -22,6 +22,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	user.POST("/teams", h.CreateTeam)
 	user.GET("/teams", h.TeamsList)
 	user.GET("/teams/:name/users", h.TeamUsersList)
+	user.POST("/teams/:name/users", h.AddUserOnTeam)
 	// user.PATCH("", h.UpdateUser)
 	// user := v1.Group("/user")
 

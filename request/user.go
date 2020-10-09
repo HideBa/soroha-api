@@ -52,13 +52,26 @@ type TeamCreateRequest struct {
 	} `json:"team"`
 }
 
-type TeamUsersListRequest struct {
-}
-
 func (req *TeamCreateRequest) Bind(c echo.Context, team *model.Team) error {
 	if err := c.Bind(req); err != nil {
 		return err
 	}
 	team.TeamName = req.Team.TeamName
 	return nil
+}
+
+type AddRemoveUsersRequest struct {
+	Users []struct {
+		UserName string `json:"userName"`
+	} `json:"users"`
+}
+
+func (req *AddRemoveUsersRequest) Bind(c echo.Context, users []string) ([]string, error) {
+	if err := c.Bind(req); err != nil {
+		return nil, err
+	}
+	for _, user := range req.Users {
+		users = append(users, user.UserName)
+	}
+	return users, nil
 }

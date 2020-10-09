@@ -103,5 +103,29 @@ func (h *Handler) TeamUsersList(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
-	return c.JSON(http.StatusOK, response.TeamUsersListResponse(team, users))
+	return c.JSON(http.StatusOK, response.TeamUsersListResponse(&team, users))
+}
+
+func (h *Handler) AddUserOnTeam(c echo.Context) error {
+	var usersNames []string
+	teamName := c.Param("name")
+
+	team, err := h.userStore.TeamByName(teamName)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, util.NewError(err))
+	}
+	if team == nil {
+		return c.JSON(http.StatusNotFound, util.NotFound())
+	}
+	req := &request.AddRemoveUsersRequest{}
+	usersNames, err = req.Bind(c, usersNames)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
+	userModels, err := h.userStore.AddUserOnTeam(team, usersNames)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
+
+	return c.JSON(http.StatusOK, response.TeamUsersListResponse(team, userModels))
 }

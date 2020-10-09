@@ -84,3 +84,35 @@ func (userStore *UserStore) TeamUsersList(teamName string) (model.Team, []model.
 
 	return team, users, nil
 }
+
+func (userStore *UserStore) TeamByName(teamName string) (*model.Team, error) {
+	var teamModel model.Team
+	if err := userStore.db.Where(&model.Team{TeamName: teamName}).First(&teamModel).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &teamModel, nil
+}
+
+func (userStore *UserStore) AddUserOnTeam(team *model.Team, users []string) ([]model.User, error) {
+	tx := userStore.db.Begin()
+	userModels := make([]model.User, 0)
+
+	for _, u := range users {
+		user := model.User{Username: u}
+
+		err := tx.Where(&user).First(&user).Error
+		if err != nil && !gorm.IsRecordNotFoundError(err) {
+			tx.Rollback()
+			return nil, err
+		}
+		userModels = append(userModels, user)
+	}
+	if err := userStore.db.Model(team).Association("Users").Append(userModels).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	return userModels, tx.Commit().Error
+}

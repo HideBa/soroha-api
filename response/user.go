@@ -60,7 +60,7 @@ func TeamsListResponse(userStore user.Store, userID uint, teams []model.Team) *T
 	return res
 }
 
-func TeamUsersListResponse(team model.Team, users []model.User) *TeamUsersResponse {
+func TeamUsersListResponse(team *model.Team, users []model.User) *TeamUsersResponse {
 	res := new(TeamUsersResponse)
 	res.Team.TeamName = team.TeamName
 	res.Team.CreatedAt = team.CreatedAt
