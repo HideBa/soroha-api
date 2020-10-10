@@ -12,5 +12,5 @@ type Store interface {
 	UpdateExpense(*model.Expense) error
 	DeleteExpense(*model.Expense) error
 	CalCulateExpenses(*model.Calculation, *model.Team, []model.User) error
-	GetCalculation(*model.User) (*model.Calculation, error)
+	// GetCalculation(*model.User) (*model.Calculation, error)
 }
