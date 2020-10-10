@@ -1,6 +1,8 @@
 package store
 
 import (
+	"time"
+
 	"github.com/HideBa/soroha-api/model"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
@@ -75,3 +77,41 @@ func (expenseStore *ExpenseStore) DeleteExpense(e *model.Expense) (err error) {
 }
 
 // func (expenseStore *ExpenseStore) ListByUser(userID uint, limit int)
+func (expenseStore *ExpenseStore) CalCulateExpenses(calc *model.Calculation, team *model.Team, users []model.User) error {
+	calc.CalculatedAt = time.Now()
+	calc.IsPaid = false
+	calc.Team = *team
+	calc.Users = users
+	tx := expenseStore.db.Begin()
+	if err := tx.Create(&calc).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	totalExpense, err := expensesTotal(expenseStore, team, users)
+	if err != nil {
+		return err
+	}
+	expensePerUser := totalExpense / len(users)
+	calc.Price = expensePerUser
+	if err := tx.Create(calc).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return nil
+}
+
+func expensesTotal(expenseStore *ExpenseStore, team *model.Team, users []model.User) (total int, err error) {
+	var expenses []model.Expense
+
+	// err = expenseStore.db.Model(team).Association("Expense").Find(value interface{}).Error
+	// expenseStore.db.Where(&model.Expense{IsCalculated: false}).
+	err = expenseStore.db.Joins("Team").Where(model.Expense{IsCalculated: false}).Where(team).Find(expenses).Error
+	if err != nil {
+		return 0, err
+	}
+	var expenseSum int
+	for _, expense := range expenses {
+		expenseSum += expense.Price
+	}
+	return expenseSum, nil
+}

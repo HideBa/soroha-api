@@ -13,10 +13,11 @@ type expenseResponse struct {
 	Slug  uuid.UUID `json:"slug"`
 	Price int       `json:"price"`
 	// UsedDate  time.Time `json:"usedDate"`
-	Comment   string    `json""comment"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt`
-	User      struct {
+	Comment      string    `json""comment"`
+	IsCalculated bool      `json:"isCalculated"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt`
+	User         struct {
 		Username string `json:"username"`
 	} `json:"user"`
 }
@@ -36,6 +37,7 @@ func NewExpenseResponse(c echo.Context, e *model.Expense) *singleExpenseResponse
 	expenseRes.Price = e.Price
 	// expenseRes.UsedDate = e.UsedDate
 	expenseRes.Comment = e.Comment
+	expenseRes.IsCalculated = e.IsCalculated
 	expenseRes.CreatedAt = e.CreatedAt
 	expenseRes.UpdatedAt = e.UpdatedAt
 	expenseRes.User.Username = e.User.Username
@@ -50,6 +52,7 @@ func NewExponseListResponse(us user.Store, userID uint, expenses []model.Expense
 		er.Slug = expense.Slug
 		er.Price = expense.Price
 		er.Comment = expense.Comment
+		er.IsCalculated = expense.IsCalculated
 		er.CreatedAt = expense.CreatedAt
 		er.UpdatedAt = expense.UpdatedAt
 		er.User.Username = expense.User.Username
@@ -57,4 +60,30 @@ func NewExponseListResponse(us user.Store, userID uint, expenses []model.Expense
 	}
 	res.ExpensesCount = count
 	return res
+}
+
+type CalculationReseponse struct {
+	CaluculatedAt time.Time `json:"calculatedAt"`
+	Price         int       `json:"price"`
+	IsPaid        bool      `json:"isPaid"`
+	UsersName     []string  `json:"usersName"`
+	TeamName      string    `json:"teamName"`
+}
+
+type SingleCalculationResponse struct {
+	Calculation CalculationReseponse `json:"calculation"`
+}
+
+func NewSingleCalculationResponse(c echo.Context, calc *model.Calculation) *SingleCalculationResponse {
+	calcRes := &SingleCalculationResponse{}
+	calcRes.Calculation.CaluculatedAt = calc.CalculatedAt
+	calcRes.Calculation.IsPaid = calc.IsPaid
+	calcRes.Calculation.Price = calc.Price
+	var usersName []string
+	for _, user := range calc.Users {
+		usersName = append(usersName, user.Username)
+	}
+	calcRes.Calculation.UsersName = usersName
+	calcRes.Calculation.TeamName = calc.Team.TeamName
+	return calcRes
 }

@@ -1,8 +1,6 @@
 package request
 
 import (
-	"fmt"
-
 	"github.com/HideBa/soroha-api/model"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -31,12 +29,12 @@ func (req *ExpenseCreateRequest) Bind(c echo.Context, e *model.Expense) error {
 	// 	return err
 	// }
 	uuid, _ := uuid.NewUUID()
-	fmt.Println("------", uuid)
 	// uuidStr := uuid
 	e.Slug = uuid
 	e.Price = req.Expense.Price
 	// e.UsedDate = req.Expense.UsedDate
 	e.Comment = req.Expense.Comment
+	e.IsCalculated = false
 	return nil
 }
 
@@ -54,5 +52,19 @@ func (req *ExpenseUpdateRequest) Bind(c echo.Context, e *model.Expense) error {
 	}
 	e.Price = req.Expense.Price
 	e.Comment = req.Expense.Comment
+	return nil
+}
+
+type CalculateExpensesRequest struct {
+	TeamName string `json:"teamName"`
+}
+
+func (req *CalculateExpensesRequest) Bind(c echo.Context, calc *model.Calculation) error {
+	if err := c.Bind(req); err != nil {
+		return err
+	}
+	if err := c.Validate(req); err != nil {
+		return err
+	}
 	return nil
 }
