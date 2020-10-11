@@ -12,6 +12,9 @@ type ExpenseCreateRequest struct {
 		// UsedDate time.Time `json:"usedDate" validate:"required"`
 		Comment string `json:"comment, omitempty"`
 	} `json:"expense"`
+	Team struct {
+		TeamName string `json:"teamName" validate:"required"`
+	} `json:"team`
 }
 
 type ExpenseUpdateRequest struct {
@@ -35,6 +38,7 @@ func (req *ExpenseCreateRequest) Bind(c echo.Context, e *model.Expense) error {
 	// e.UsedDate = req.Expense.UsedDate
 	e.Comment = req.Expense.Comment
 	e.IsCalculated = false
+	e.Team.TeamName = req.Team.TeamName
 	return nil
 }
 

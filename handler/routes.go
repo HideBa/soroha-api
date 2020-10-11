@@ -19,10 +19,12 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	user := v1.Group("/user", jwtMiddleware)
 	user.GET("", h.CurrentUser)
-	user.POST("/teams", h.CreateTeam)
-	user.GET("/teams", h.TeamsList)
-	user.GET("/teams/:name/users", h.TeamUsersList)
-	user.POST("/teams/:name/users", h.AddUserOnTeam)
+	team := v1.Group("/teams", jwtMiddleware)
+	team.POST("", h.CreateTeam)
+	team.GET("", h.TeamsList)
+	team.GET("/:name/users", h.TeamUsersList)
+	team.POST("/:name/users", h.AddUserOnTeam)
+	team.GET("/:teamname/user/expenses", h.UserExpenses)
 	// user.PATCH("", h.UpdateUser)
 	// user := v1.Group("/user")
 

@@ -14,5 +14,6 @@ type Expense struct {
 	IsCalculated bool `gorm:"not null"`
 	User         User
 	UserID       uint `gorm:"not null"`
-	Team         Team `gorm:"not null"`
+	Team         Team
+	TeamID       uint `gorm:"not null"`
 }

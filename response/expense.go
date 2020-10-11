@@ -24,6 +24,7 @@ type expenseResponse struct {
 
 type singleExpenseResponse struct {
 	Expense expenseResponse `json:"expense"`
+	Team    TeamResponse    `json:"team"`
 }
 
 type expenseListResponse struct {
@@ -32,16 +33,19 @@ type expenseListResponse struct {
 }
 
 func NewExpenseResponse(c echo.Context, e *model.Expense) *singleExpenseResponse {
-	expenseRes := expenseResponse{}
-	expenseRes.Slug = e.Slug
-	expenseRes.Price = e.Price
+	expenseRes := singleExpenseResponse{}
+	expenseRes.Expense.Slug = e.Slug
+	expenseRes.Expense.Price = e.Price
 	// expenseRes.UsedDate = e.UsedDate
-	expenseRes.Comment = e.Comment
-	expenseRes.IsCalculated = e.IsCalculated
-	expenseRes.CreatedAt = e.CreatedAt
-	expenseRes.UpdatedAt = e.UpdatedAt
-	expenseRes.User.Username = e.User.Username
-	return &singleExpenseResponse{expenseRes}
+	expenseRes.Expense.Comment = e.Comment
+	expenseRes.Expense.IsCalculated = e.IsCalculated
+	expenseRes.Expense.CreatedAt = e.CreatedAt
+	expenseRes.Expense.UpdatedAt = e.UpdatedAt
+	expenseRes.Expense.User.Username = e.User.Username
+	expenseRes.Team.TeamName = e.Team.TeamName
+	// expenseRes.Team.CreatedAt = e.Team.CreatedAt
+	// expenseRes.Team.UpdateAt = e.Team.UpdatedAt
+	return &expenseRes
 }
 
 func NewExponseListResponse(us user.Store, userID uint, expenses []model.Expense, count int) *expenseListResponse {

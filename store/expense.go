@@ -20,6 +20,12 @@ func NewExpenseStore(db *gorm.DB) *ExpenseStore {
 
 func (expenseStore *ExpenseStore) CreateExpense(e *model.Expense) (err error) {
 	//must implement transaction manually when expense has many to many relations with other models
+	var team model.Team
+	err = expenseStore.db.Where(model.Team{TeamName: e.Team.TeamName}).First(&team).Error
+	if err != nil {
+		return err
+	}
+	e.Team = team
 	tx := expenseStore.db.Begin()
 	if err := tx.Create(&e).Error; err != nil {
 		tx.Rollback()
@@ -27,6 +33,10 @@ func (expenseStore *ExpenseStore) CreateExpense(e *model.Expense) (err error) {
 	}
 
 	if err := tx.Where(e.ID).Preload("User").Find(&e).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Where(e.ID).Preload("Team").Find(&e).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -44,19 +54,25 @@ func (expenseStore *ExpenseStore) List(limit int) ([]model.Expense, int, error) 
 	return expenses, count, nil
 }
 
-func (expenseStore *ExpenseStore) ListByUser(username string, limit int) ([]model.Expense, int, error) {
+func (expenseStore *ExpenseStore) ListByUser(userID uint, limit int, teamName string) ([]model.Expense, int, error) {
 	var (
 		user     model.User
+		team     model.Team
 		expenses []model.Expense
 		count    int
 	)
-	err := expenseStore.db.Where(&model.User{Username: username}).First(&user).Error
+	err := expenseStore.db.First(&user, userID).Error
+
 	if err != nil {
 		return nil, 0, err
 	}
-
-	expenseStore.db.Where(&model.Expense{UserID: user.ID}).Preload("User").Limit(limit).Order("created_at").Find(&expenses)
-	expenseStore.db.Where(&model.Expense{UserID: user.ID}).Model(&model.User{}).Count(&count)
+	err = expenseStore.db.Where(&model.Team{TeamName: teamName}).First(&team).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	expenseStore.db.Where(&model.Expense{UserID: user.ID, TeamID: team.ID}).Preload("User").Preload("Team").Limit(limit).Order("created_at").Find(&expenses)
+	// expenseStore.db.Where(&model.Expense{UserID: user.ID}).Model(&model.User{}).Count(&count)
+	count = len(expenses)
 
 	return expenses, count, nil
 }
