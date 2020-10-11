@@ -44,6 +44,23 @@ func (expenseStore *ExpenseStore) List(limit int) ([]model.Expense, int, error) 
 	return expenses, count, nil
 }
 
+func (expenseStore *ExpenseStore) ListByUser(username string, limit int) ([]model.Expense, int, error) {
+	var (
+		user     model.User
+		expenses []model.Expense
+		count    int
+	)
+	err := expenseStore.db.Where(&model.User{Username: username}).First(&user).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	expenseStore.db.Where(&model.Expense{UserID: user.ID}).Preload("User").Limit(limit).Order("created_at").Find(&expenses)
+	expenseStore.db.Where(&model.Expense{UserID: user.ID}).Model(&model.User{}).Count(&count)
+
+	return expenses, count, nil
+}
+
 func (expenseStore *ExpenseStore) GetUserExpenseBySlug(userID uint, slug uuid.UUID) (*model.Expense, error) {
 	var expenseModel model.Expense
 
@@ -76,7 +93,6 @@ func (expenseStore *ExpenseStore) DeleteExpense(e *model.Expense) (err error) {
 	return expenseStore.db.Delete(e).Error
 }
 
-// func (expenseStore *ExpenseStore) ListByUser(userID uint, limit int)
 func (expenseStore *ExpenseStore) CalCulateExpenses(calc *model.Calculation, team *model.Team, users []model.User) error {
 	calc.CalculatedAt = time.Now()
 	calc.IsPaid = false
