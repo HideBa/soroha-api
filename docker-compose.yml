@@ -35,6 +35,7 @@
         MYSQL_USER: soroha_user
         MYSQL_DATABASE: soroha_db
         MYSQL_PASSWORD: password
+        MYSQL_ROOT_PASSWORD: password
       ports:
         - 3306:3306
       tty: true
