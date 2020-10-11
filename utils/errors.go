@@ -24,3 +24,10 @@ func NotFound() Error {
 	e.Errors["body"] = "resource not found"
 	return e
 }
+
+func AccessForbidden() Error {
+	e := Error{}
+	e.Errors = make(map[string]interface{})
+	e.Errors["body"] = "resource not found"
+	return e
+}

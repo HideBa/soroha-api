@@ -32,7 +32,7 @@ func (h *Handler) Login(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, util.NewError(err))
 	}
 	if u == nil {
-		return c.JSON(http.StatusForbidden, util.NewError(err))
+		return c.JSON(http.StatusForbidden, util.AccessForbidden())
 	}
 	if !u.CheckPassword(req.User.Password) {
 		return &echo.HTTPError{Code: http.StatusUnauthorized, Message: "failure to authenticate"}
