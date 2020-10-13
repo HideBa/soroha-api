@@ -77,6 +77,24 @@ func (expenseStore *ExpenseStore) ListByUser(userID uint, limit int, teamName st
 	return expenses, count, nil
 }
 
+func (expenseStore *ExpenseStore) ListByTeam(limit int, teamName string) ([]model.Expense, int, error) {
+	var (
+		team     model.Team
+		expenses []model.Expense
+		count    int
+	)
+	err := expenseStore.db.Where(&model.Team{TeamName: teamName}).First(&team).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	err = expenseStore.db.Where(&model.Expense{TeamID: team.ID}).Preload("Team").Limit(limit).Order("created_at").Find(&expenses).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	count = len(expenses)
+	return expenses, count, nil
+}
+
 func (expenseStore *ExpenseStore) GetUserExpenseBySlug(userID uint, slug uuid.UUID) (*model.Expense, error) {
 	var expenseModel model.Expense
 

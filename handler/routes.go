@@ -25,6 +25,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	team.GET("/:name/users", h.TeamUsersList)
 	team.POST("/:name/users", h.AddUserOnTeam)
 	team.GET("/:teamname/user/expenses", h.UserExpenses)
+	team.GET("/:teamname/expenses", h.TeamExpenses)
 	// user.PATCH("", h.UpdateUser)
 	// user := v1.Group("/user")
 

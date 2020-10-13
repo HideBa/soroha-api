@@ -48,7 +48,7 @@ func NewExpenseResponse(c echo.Context, e *model.Expense) *singleExpenseResponse
 	return &expenseRes
 }
 
-func NewExponseListResponse(us user.Store, userID uint, expenses []model.Expense, count int) *expenseListResponse {
+func ExpenseListResponse(us user.Store, expenses []model.Expense, count int) *expenseListResponse {
 	res := new(expenseListResponse)
 	res.Expenses = make([]*expenseResponse, 0)
 	for _, expense := range expenses {

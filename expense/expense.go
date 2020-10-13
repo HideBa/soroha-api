@@ -14,4 +14,5 @@ type Store interface {
 	CalCulateExpenses(*model.Calculation, *model.Team, []model.User) error
 	ListByUser(uint, int, string) ([]model.Expense, int, error)
 	// GetCalculation(*model.User) (*model.Calculation, error)
+	ListByTeam(int, string) ([]model.Expense, int, error)
 }

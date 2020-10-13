@@ -34,13 +34,12 @@ func (h *Handler) Expenses(c echo.Context) error {
 		err      error
 	)
 
-	userID := userIDFromToken(c)
 	expenses, count, err = h.expenseStore.List(10)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
-	return c.JSON(http.StatusOK, response.NewExponseListResponse(h.userStore, userID, expenses, count))
+	return c.JSON(http.StatusOK, response.ExpenseListResponse(h.userStore, expenses, count))
 }
 
 func (h *Handler) UserExpenses(c echo.Context) error {
@@ -57,7 +56,23 @@ func (h *Handler) UserExpenses(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
-	return c.JSON(http.StatusOK, response.NewExponseListResponse(h.userStore, userID, expenses, count))
+	return c.JSON(http.StatusOK, response.ExpenseListResponse(h.userStore, expenses, count))
+}
+
+func (h *Handler) TeamExpenses(c echo.Context) error {
+	var (
+		expenses []model.Expense
+		teamName string
+		count    int
+		err      error
+	)
+
+	teamName = c.Param("teamname")
+	expenses, count, err = h.expenseStore.ListByTeam(10, teamName)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
+	return c.JSON(http.StatusOK, response.ExpenseListResponse(h.userStore, expenses, count))
 }
 
 func (h *Handler) UpdateExpense(c echo.Context) error {
