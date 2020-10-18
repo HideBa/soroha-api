@@ -68,6 +68,7 @@ func ExpenseListResponse(us user.Store, expenses []model.Expense, count int) *ex
 
 type CalculationReseponse struct {
 	CaluculatedAt time.Time `json:"calculatedAt"`
+	Slug          uuid.UUID `json:"slug"`
 	Price         int       `json:"price"`
 	IsPaid        bool      `json:"isPaid"`
 	UsersName     string    `json:"usersName"`
@@ -80,6 +81,7 @@ type SingleCalculationResponse struct {
 
 func NewSingleCalculationResponse(c echo.Context, calc *model.Calculation) *SingleCalculationResponse {
 	calcRes := &SingleCalculationResponse{}
+	calcRes.Calculation.Slug = calc.Slug
 	calcRes.Calculation.CaluculatedAt = calc.CalculatedAt
 	calcRes.Calculation.IsPaid = calc.IsPaid
 	calcRes.Calculation.Price = calc.Price

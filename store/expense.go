@@ -135,6 +135,8 @@ func (expenseStore *ExpenseStore) CalCulateExpenses(calcs []model.Calculation, t
 	expensePerUser := totalExpense / len(users)
 	for _, user := range users {
 		calc := model.Calculation{}
+		uuid, _ := uuid.NewUUID()
+		calc.Slug = uuid
 		calc.CalculatedAt = time.Now()
 		calc.IsPaid = false
 		calc.Team = *team
