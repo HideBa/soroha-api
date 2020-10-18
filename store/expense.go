@@ -127,35 +127,32 @@ func (expenseStore *ExpenseStore) DeleteExpense(e *model.Expense) (err error) {
 	return expenseStore.db.Delete(e).Error
 }
 
-func (expenseStore *ExpenseStore) CalCulateExpenses(calc *model.Calculation, team *model.Team, users []model.User) error {
-	calc.CalculatedAt = time.Now()
-	calc.IsPaid = false
-	calc.Team = *team
-	calc.Users = users
-	tx := expenseStore.db.Begin()
-	if err := tx.Create(&calc).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
+func (expenseStore *ExpenseStore) CalCulateExpenses(calcs []model.Calculation, team *model.Team, users []model.User) ([]model.Calculation, error) {
 	totalExpense, err := expensesTotal(expenseStore, team, users)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	expensePerUser := totalExpense / len(users)
-	calc.Price = expensePerUser
-	if err := tx.Create(calc).Error; err != nil {
-		tx.Rollback()
-		return err
+	for _, user := range users {
+		calc := model.Calculation{}
+		calc.CalculatedAt = time.Now()
+		calc.IsPaid = false
+		calc.Team = *team
+		calc.User = user
+		calc.Price = expensePerUser
+		calcs = append(calcs, calc)
 	}
-	return nil
+	for _, calc := range calcs {
+		if err := expenseStore.db.Create(&calc).Error; err != nil {
+			return calcs, err
+		}
+	}
+	return calcs, nil
 }
 
 func expensesTotal(expenseStore *ExpenseStore, team *model.Team, users []model.User) (total int, err error) {
 	var expenses []model.Expense
-
-	// err = expenseStore.db.Model(team).Association("Expense").Find(value interface{}).Error
-	// expenseStore.db.Where(&model.Expense{IsCalculated: false}).
-	err = expenseStore.db.Joins("Team").Where(model.Expense{IsCalculated: false}).Where(team).Find(expenses).Error
+	err = expenseStore.db.Preload("Team").Where(model.Expense{IsCalculated: false, TeamID: team.ID}).Find(&expenses).Error
 	if err != nil {
 		return 0, err
 	}

@@ -26,6 +26,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	team.POST("/:name/users", h.AddUserOnTeam)
 	team.GET("/:teamname/user/expenses", h.UserExpenses)
 	team.GET("/:teamname/expenses", h.TeamExpenses)
+	team.POST("/:teamname/calculations", h.CalculateExpenses)
 	// user.PATCH("", h.UpdateUser)
 	// user := v1.Group("/user")
 
@@ -51,6 +52,5 @@ func (h *Handler) Register(v1 *echo.Group) {
 	expenses.PUT("/:slug", h.UpdateExpense)
 	expenses.DELETE("/:slug", h.DeleteExpense)
 
-	calculations := v1.Group("/calculations", jwtMiddleware)
-	calculations.POST("", h.CalculateExpenses)
+	// calculations := v1.Group("/calculations", jwtMiddleware)
 }

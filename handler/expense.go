@@ -126,21 +126,22 @@ func (h *Handler) DeleteExpense(c echo.Context) error {
 }
 
 func (h *Handler) CalculateExpenses(c echo.Context) error {
-	var calculation model.Calculation
-	// var team model.Team
-	// var users []model.User
-	req := &request.CalculateExpensesRequest{}
-	if err := req.Bind(c, &calculation); err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
-	}
-	team, users, err := h.userStore.TeamUsersList(req.TeamName)
+	var calculations []model.Calculation
+	userID := userIDFromToken(c)
+	teamName := c.Param("teamname")
+	team, users, err := h.userStore.TeamUsersList(teamName)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
 	}
-	err = h.expenseStore.CalCulateExpenses(&calculation, &team, users)
+	calculations, err = h.expenseStore.CalCulateExpenses(calculations, &team, users)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
 	}
-
-	return c.JSON(http.StatusOK, response.NewSingleCalculationResponse(c, &calculation))
+	var usersCals *model.Calculation
+	for _, calc := range calculations {
+		if calc.User.ID == userID {
+			usersCals = &calc
+		}
+	}
+	return c.JSON(http.StatusOK, response.NewSingleCalculationResponse(c, usersCals))
 }

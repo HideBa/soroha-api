@@ -70,7 +70,7 @@ type CalculationReseponse struct {
 	CaluculatedAt time.Time `json:"calculatedAt"`
 	Price         int       `json:"price"`
 	IsPaid        bool      `json:"isPaid"`
-	UsersName     []string  `json:"usersName"`
+	UsersName     string    `json:"usersName"`
 	TeamName      string    `json:"teamName"`
 }
 
@@ -83,11 +83,7 @@ func NewSingleCalculationResponse(c echo.Context, calc *model.Calculation) *Sing
 	calcRes.Calculation.CaluculatedAt = calc.CalculatedAt
 	calcRes.Calculation.IsPaid = calc.IsPaid
 	calcRes.Calculation.Price = calc.Price
-	var usersName []string
-	for _, user := range calc.Users {
-		usersName = append(usersName, user.Username)
-	}
-	calcRes.Calculation.UsersName = usersName
+	calcRes.Calculation.UsersName = calc.User.Username
 	calcRes.Calculation.TeamName = calc.Team.TeamName
 	return calcRes
 }

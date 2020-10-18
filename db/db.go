@@ -32,6 +32,7 @@ func AutoMigrate(db *gorm.DB) {
 		&model.User{},
 		&model.Expense{},
 		&model.Team{},
+		&model.Calculation{},
 	)
 	db.Model(&model.Expense{}).AddForeignKey("user_id", "users(id)", "RESTRICT", "RESTRICT")
 }
