@@ -164,3 +164,20 @@ func expensesTotal(expenseStore *ExpenseStore, team *model.Team, users []model.U
 	}
 	return expenseSum, nil
 }
+
+func (expenseStore *ExpenseStore) GetCalculationBySlug(slug uuid.UUID) (*model.Calculation, error) {
+	var calculation model.Calculation
+	err := expenseStore.db.Where(model.Calculation{Slug: slug}).Find(&calculation).Error
+	if err != nil {
+		return nil, err
+	}
+	return &calculation, nil
+}
+
+func (expenseStore *ExpenseStore) UpdateCalculation(cl *model.Calculation) error {
+	err := expenseStore.db.Model(cl).Update(cl).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

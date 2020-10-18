@@ -59,16 +59,30 @@ func (req *ExpenseUpdateRequest) Bind(c echo.Context, e *model.Expense) error {
 	return nil
 }
 
-type CalculateExpensesRequest struct {
-	TeamName string `json:"teamName"`
+// type CalculateExpensesRequest struct {
+// 	TeamName string `json:"teamName"`
+// }
+
+// func (req *CalculateExpensesRequest) Bind(c echo.Context, calc *model.Calculation) error {
+// 	if err := c.Bind(req); err != nil {
+// 		return err
+// 	}
+// 	if err := c.Validate(req); err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+
+type CalculationUpdateRequest struct {
+	Calculation struct {
+		IsPaid bool `json:"isPaid"`
+	} `json:"calculation"`
 }
 
-func (req *CalculateExpensesRequest) Bind(c echo.Context, calc *model.Calculation) error {
+func (req *CalculationUpdateRequest) Bind(c echo.Context, cl *model.Calculation) error {
 	if err := c.Bind(req); err != nil {
 		return err
 	}
-	if err := c.Validate(req); err != nil {
-		return err
-	}
+	cl.IsPaid = req.Calculation.IsPaid
 	return nil
 }

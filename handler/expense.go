@@ -145,3 +145,19 @@ func (h *Handler) CalculateExpenses(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, response.NewSingleCalculationResponse(c, usersCals))
 }
+
+func (h *Handler) UpdateCalculation(c echo.Context) error {
+	// teamName := c.Param("teamname")
+	slugStr := c.Param("slug")
+	slug, err := uuid.Parse(slugStr)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, util.NewError(err))
+	}
+	calculation, err := h.expenseStore.GetCalculationBySlug(slug)
+	req := &request.CalculationUpdateRequest{}
+	if err = req.Bind(c, calculation); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
+	err = h.expenseStore.UpdateCalculation(calculation)
+	return c.JSON(http.StatusOK, response.NewSingleCalculationResponse(c, calculation))
+}

@@ -12,6 +12,8 @@ type Store interface {
 	UpdateExpense(*model.Expense) error
 	DeleteExpense(*model.Expense) error
 	CalCulateExpenses([]model.Calculation, *model.Team, []model.User) ([]model.Calculation, error)
+	UpdateCalculation(*model.Calculation) error
+	GetCalculationBySlug(slug uuid.UUID) (*model.Calculation, error)
 	ListByUser(uint, int, string) ([]model.Expense, int, error)
 	// GetCalculation(*model.User) (*model.Calculation, error)
 	ListByTeam(int, string) ([]model.Expense, int, error)
