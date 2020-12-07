@@ -11,12 +11,17 @@ import (
 )
 
 func (h *Handler) SignUp(c echo.Context) error {
-	var user model.User
+	var (
+		user model.User
+		team model.Team
+	)
 	req := &request.UserRegisterRequest{}
 	if err := req.Bind(c, &user); err != nil {
 		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: err.Error}
 	}
-	if err := h.userStore.Create(&user); err != nil {
+	team.TeamName = user.Username
+	team.IsPersonal = true
+	if err := h.userStore.Create(&user, &team); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
 	}
 	return c.JSON(http.StatusCreated, response.NewUserResponse(&user))
@@ -67,6 +72,7 @@ func (h *Handler) CreateTeam(c echo.Context) error {
 	if err := req.Bind(c, &teamModel); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
 	}
+	teamModel.IsPersonal = false
 	if err := h.userStore.CreateTeam(&teamModel, userIDFromToken(c)); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
 	}

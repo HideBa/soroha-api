@@ -1,0 +1,10 @@
+name: production deployment
+on:
+  push:
+    branches:
+      - release
+
+env:
+  GCP_PROJECT: soroha
+  GCP_REGION: us-central1
+  # IMAGE_NAME: 

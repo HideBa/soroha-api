@@ -37,8 +37,17 @@ func (userStore *UserStore) GetByUsername(username string) (*model.User, error) 
 	return &m, nil
 }
 
-func (userStore *UserStore) Create(u *model.User) (err error) {
-	return userStore.db.Create(u).Error
+func (userStore *UserStore) Create(u *model.User, t *model.Team) (err error) {
+	tx := userStore.db.Begin()
+	if err := userStore.db.Create(u).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := userStore.CreateTeam(t, u.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }
 
 func (userStore *UserStore) Update(u *model.User) (err error) {

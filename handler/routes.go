@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/HideBa/soroha-api/config"
 	"github.com/HideBa/soroha-api/router/middleware"
 	"github.com/labstack/echo/v4"
@@ -11,7 +9,6 @@ import (
 
 func (h *Handler) Register(v1 *echo.Group) {
 	jwtMiddleware := middleware.JWT([]byte(config.GetConfig().Server.KEY))
-	fmt.Println(jwtMiddleware)
 	v1.GET("", h.MainPage)
 	guestUsers := v1.Group("/users")
 	guestUsers.POST("/signup", h.SignUp)

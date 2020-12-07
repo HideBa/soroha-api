@@ -2,28 +2,6 @@
   version: '3.7'
   
   services:
-    app:
-      container_name: soroha-api
-      build:
-        context: .
-        target: build
-      volumes:
-        - ./app:/app
-      environment:
-        DB_HOST: db
-        DB_PORT: 3306
-        DB_USER: soroha_user
-        DB_PASSWORD: password
-        DB_NAME: soroha_db
-        CORS_ALLOW_ORIGIN: http://localhost:8081
-      ports:
-        - 3000:3000
-      depends_on:
-        - db
-      links:
-        - db
-      tty: true
-  
     db:
       container_name: soroha_db
       image: mysql:8.0.13
@@ -31,6 +9,7 @@
         - ./dbdata/mysql/data:/var/lib/mysql
         - ./dbdata/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
         - ./dbdata/mysql/sql:/docker-entrypoint-initdb.d
+      hostname: db
       environment:
         MYSQL_USER: soroha_user
         MYSQL_DATABASE: soroha_db
@@ -39,3 +18,30 @@
       ports:
         - 3306:3306
       tty: true
+    app:
+      container_name: soroha-api
+      build:
+        context: .
+        args: 
+          TAG: debug
+        # target: build
+      # volumes:
+      #   - .:/app
+      environment:
+        DB_NAME: soroha_db
+        DB_USER: soroha_user
+        DB_PASS: password
+        DB_HOST: db
+        DB_PORT: 3306
+        SERVER_PORT: 4000
+        SECRET_KEY: example
+        SOROHA_ENV: docker
+        CORS_ALLOW_ORIGIN: http://localhost:8081
+      ports:
+        - 4000:4000
+      depends_on:
+        - db
+      links:
+        - db
+      tty: true
+  

@@ -5,7 +5,7 @@ import "github.com/HideBa/soroha-api/model"
 type Store interface {
 	GetByID(uint) (*model.User, error)
 	GetByUsername(string) (*model.User, error)
-	Create(*model.User) error
+	Create(*model.User, *model.Team) error
 	Update(*model.User) error
 
 	CreateTeam(*model.Team, uint) error

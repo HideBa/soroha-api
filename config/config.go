@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-ini/ini"
+	"github.com/joho/godotenv"
 )
 
 type Configuration struct {
@@ -12,24 +12,47 @@ type Configuration struct {
 	Server ServerConfiguration
 }
 
+type Env string
+
+func (e Env) IsLocal() bool {
+	return e == "local"
+}
+
+func (e Env) IsDev() bool {
+	return e == "development"
+}
+
+func (e Env) IsDocker() bool {
+	return e == "docker"
+}
+
+func (e Env) IsProd() bool {
+	return e == "production"
+}
+
 var config Configuration
 
 func GetConfig() Configuration {
-	cfg, err := ini.Load("config.ini")
-	if err != nil {
-		log.Printf("failure to load file: %v", err)
-		os.Exit(1)
+	env := os.Getenv("SOROHA_ENV")
+	if "" == env {
+		env = "development"
+	}
+	if env == "development" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 	dbConfig := DbConfiguration{
-		DbName: cfg.Section("database").Key("db_name").String(),
-		DbUser: cfg.Section("database").Key("db_user").String(),
-		DbPass: cfg.Section("database").Key("db_pass").String(),
-		DbHost: cfg.Section("database").Key("db_host").String(),
-		DbPort: cfg.Section("database").Key("db_port").String(),
+		DbName: os.Getenv("DB_NAME"),
+		DbUser: os.Getenv("DB_USER"),
+		DbPass: os.Getenv("DB_PASS"),
+		DbHost: os.Getenv("DB_HOST"),
+		DbPort: os.Getenv("DB_PORT"),
 	}
 	serverConfig := ServerConfiguration{
-		PORT: cfg.Section("server").Key("port").String(),
-		KEY:  cfg.Section("server").Key("secret").String(),
+		PORT: os.Getenv("SERVER_PORT"),
+		KEY:  os.Getenv("SECRET_KEY"),
 	}
 
 	config = Configuration{
