@@ -1,10 +1,51 @@
 name: production deployment
+
 on:
   push:
     branches:
-      - release
+    - master
 
 env:
-  GCP_PROJECT: soroha
+  GCP_PROJECT: ${{ secrets.GCP_PROJ_ID }}
   GCP_REGION: us-central1
-  # IMAGE_NAME: 
+  RUN_APP: soroha
+  IMAGE_NAME: gcr.io/soroha/soroha
+
+jobs:
+  build:
+    name: production deployment
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Setup gcloud CLI
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '290.0.1'
+        service_account_key: ${{ secrets.GCP_SA_SECRET_PROD }}
+        project_id: ${{ secrets.GCP_PROJ_ID }}
+        service_account_email: ${{ secrets.GCP_SA_EMAIL_PROD }}
+        export_default_credentials: true
+    - name: Configure docker
+      run: |
+        docker build -t ${IMAGE_NAME}:${{ github.sha }} .
+    - name: docker push
+      run: |
+        docker push ${IMAGE_NAME}
+    # Build and push image to Google Container Registry
+    - name: Build
+      run: |-
+        gcloud builds submit \
+          --quiet \
+          --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+    # Deploy image to Cloud Run
+    - name: Deploy
+      run: |-
+        gcloud run deploy ${RUN_APP} \
+          --quiet \
+          --region $GCP_REGION \
+          --project $GCP_PROJECT \
+          --image $IMAGE_NAME:${{ github.sha }} \
+          --platform managed \
+          --allow-unauthenticated
