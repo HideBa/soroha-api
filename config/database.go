@@ -6,4 +6,5 @@ type DbConfiguration struct {
 	DbPass string
 	DbHost string
 	DbPort string
+	DbURL  string
 }

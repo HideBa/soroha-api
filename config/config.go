@@ -49,6 +49,7 @@ func GetConfig() Configuration {
 		DbPass: os.Getenv("DB_PASS"),
 		DbHost: os.Getenv("DB_HOST"),
 		DbPort: os.Getenv("DB_PORT"),
+		DbURL:  os.Getenv("DB_URL"),
 	}
 	serverConfig := ServerConfiguration{
 		PORT: os.Getenv("SERVER_PORT"),
