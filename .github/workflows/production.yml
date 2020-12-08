@@ -8,7 +8,7 @@ on:
 env:
   GCP_PROJECT: ${{ secrets.GCP_PROJ_ID }}
   GCP_REGION: us-central1
-  RUN_APP: soroha
+  RUN_APP: soroha-api
   IMAGE_NAME: gcr.io/soroha/soroha-api
 
 jobs:
