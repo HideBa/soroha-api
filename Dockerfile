@@ -30,6 +30,4 @@ RUN update-ca-certificates
 
 COPY --from=build /app/app .
 
-EXPOSE 4000
-
 CMD ["./app"]
