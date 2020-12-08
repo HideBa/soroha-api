@@ -52,6 +52,5 @@ jobs:
           --quiet \
           --region $GCP_REGION \
           --project $GCP_PROJECT \
-          --image $IMAGE_NAME:${{ github.sha }} \
+          --image ${IMAGE_NAME}:${{ github.sha }} \
           --platform managed \
-          --allow-unauthenticated
