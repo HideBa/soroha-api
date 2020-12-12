@@ -28,6 +28,8 @@ RUN apk update --no-cache \
   && apk add --no-cache ca-certificates
 RUN update-ca-certificates
 
+ENV DB_URL=soroha_user:password@tcp(localhost:3306)/soroha_db?charset=utf8&parseTime=True&loc=Local, SERVER_PORT=8080, SECRET_KEY=example, SOROHA_ENV=production
+
 COPY --from=build /app/app .
 
 CMD ["./app"]

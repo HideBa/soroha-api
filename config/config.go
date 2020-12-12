@@ -44,12 +44,12 @@ func GetConfig() Configuration {
 		}
 	}
 	dbConfig := DbConfiguration{
-		DbName: os.Getenv("DB_NAME"),
-		DbUser: os.Getenv("DB_USER"),
-		DbPass: os.Getenv("DB_PASS"),
-		DbHost: os.Getenv("DB_HOST"),
-		DbPort: os.Getenv("DB_PORT"),
-		DbURL:  os.Getenv("DB_URL"),
+		// DbName: os.Getenv("DB_NAME"),
+		// DbUser: os.Getenv("DB_USER"),
+		// DbPass: os.Getenv("DB_PASS"),
+		// DbHost: os.Getenv("DB_HOST"),
+		// DbPort: os.Getenv("DB_PORT"),
+		DbURL: os.Getenv("DB_URL"),
 	}
 	serverConfig := ServerConfiguration{
 		PORT: os.Getenv("SERVER_PORT"),
