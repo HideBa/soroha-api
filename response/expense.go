@@ -13,10 +13,10 @@ type expenseResponse struct {
 	Slug  uuid.UUID `json:"slug"`
 	Price int       `json:"price"`
 	// UsedDate  time.Time `json:"usedDate"`
-	Comment      string    `json""comment"`
+	Comment      string    `json:"comment"`
 	IsCalculated bool      `json:"isCalculated"`
 	CreatedAt    time.Time `json:"createdAt"`
-	UpdatedAt    time.Time `json:"updatedAt`
+	UpdatedAt    time.Time `json:"updatedAt"`
 	User         struct {
 		Username string `json:"username"`
 	} `json:"user"`
