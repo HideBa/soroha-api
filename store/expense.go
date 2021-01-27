@@ -87,7 +87,7 @@ func (expenseStore *ExpenseStore) ListByTeam(limit int, teamName string) ([]mode
 	if err != nil {
 		return nil, 0, err
 	}
-	err = expenseStore.db.Where(&model.Expense{TeamID: team.ID}).Preload("Team").Limit(limit).Order("created_at").Find(&expenses).Error
+	err = expenseStore.db.Where(&model.Expense{TeamID: team.ID}).Preload("Team").Order("created_at").Find(&expenses).Error
 	if err != nil {
 		return nil, 0, err
 	}
@@ -128,7 +128,12 @@ func (expenseStore *ExpenseStore) DeleteExpense(e *model.Expense) (err error) {
 }
 
 func (expenseStore *ExpenseStore) CalCulateExpenses(calcs []model.Calculation, team *model.Team, users []model.User) ([]model.Calculation, error) {
-	totalExpense, err := expensesTotal(expenseStore, team, users)
+	expenses, err := expenseStore.NonCalculatedExpensesByTeam(team.TeamName)
+
+	if err != nil {
+		return nil, err
+	}
+	totalExpense, err := expensesTotal(expenses)
 	if err != nil {
 		return nil, err
 	}
@@ -139,31 +144,70 @@ func (expenseStore *ExpenseStore) CalCulateExpenses(calcs []model.Calculation, t
 		calc.Slug = uuid
 		calc.CalculatedAt = time.Now()
 		calc.IsPaid = false
+		calc.TeamID = team.ID
 		calc.Team = *team
+		calc.UserID = user.ID
 		calc.User = user
 		calc.Price = expensePerUser
 		calcs = append(calcs, calc)
 	}
+	//TODO: Must change "is_calculated"
+	tx := expenseStore.db.Begin()
+	for _, expense := range expenses {
+		expense.IsCalculated = true
+		err := expenseStore.UpdateExpense(&expense)
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
 	for _, calc := range calcs {
 		if err := expenseStore.db.Create(&calc).Error; err != nil {
+			tx.Rollback()
 			return calcs, err
 		}
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		return nil, err
 	}
 	return calcs, nil
 }
 
-func expensesTotal(expenseStore *ExpenseStore, team *model.Team, users []model.User) (total int, err error) {
-	var expenses []model.Expense
-	err = expenseStore.db.Preload("Team").Where(model.Expense{IsCalculated: false, TeamID: team.ID}).Find(&expenses).Error
+func (expenseStore *ExpenseStore) NonCalculatedExpensesByTeam(teamName string) ([]model.Expense, error) {
+	var (
+		expenses []model.Expense
+		err      error
+	)
+	// err = expenseStore.db.Where(}).Preload("Team").Find(&expenses).Error
+	// err = expenseStore.db.Joins("JOIN 'teams' ON teams.id = expenses.team_id").Where("teams.team_name = ? AND expenses.is_calculated = false", teamName).Find(&expenses).Error
+	err = expenseStore.db.Raw("select * from expenses join teams on expenses.team_id = teams.id where teams.team_name = ? and expenses.is_calculated = false", teamName).Scan(&expenses).Error
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
+	return expenses, nil
+}
+
+func expensesTotal(expenses []model.Expense) (total int, err error) {
 	var expenseSum int
 	for _, expense := range expenses {
 		expenseSum += expense.Price
 	}
 	return expenseSum, nil
 }
+
+// func expensesTotal(expenseStore *ExpenseStore, team *model.Team) (total int, err error) {
+// 	var expenses []model.Expense
+// 	err = expenseStore.db.Preload("Team").Where(model.Expense{IsCalculated: false, TeamID: team.ID}).Find(&expenses).Error
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	var expenseSum int
+// 	for _, expense := range expenses {
+// 		expenseSum += expense.Price
+// 	}
+// 	return expenseSum, nil
+// }
 
 func (expenseStore *ExpenseStore) GetCalculationBySlug(slug uuid.UUID) (*model.Calculation, error) {
 	var calculation model.Calculation
@@ -176,6 +220,14 @@ func (expenseStore *ExpenseStore) GetCalculationBySlug(slug uuid.UUID) (*model.C
 
 func (expenseStore *ExpenseStore) UpdateCalculation(cl *model.Calculation) error {
 	err := expenseStore.db.Model(cl).Update(cl).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (expenseStore *ExpenseStore) CalculationsList(teamName string, calculations []model.Calculation) error {
+	err := expenseStore.db.Preload("Calculation").Preload("Team").Where(&model.Team{TeamName: teamName}).Find(&calculations).Error
 	if err != nil {
 		return err
 	}

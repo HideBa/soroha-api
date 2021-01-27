@@ -7,10 +7,11 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"unique_index;not null" json:"username"`
-	Password string `gorm:"not null" json:"password"`
-	Expense  []Expense
-	Teams    []Team `gorm:"many2many:user_teams"`
+	Username    string `gorm:"unique_index;not null" json:"username"`
+	Password    string `gorm:"not null" json:"password"`
+	Expense     []Expense
+	Teams       []Team `gorm:"many2many:user_teams"`
+	Calculation []Calculation
 }
 
 func (u *User) HashPassword(password string) (string, error) {

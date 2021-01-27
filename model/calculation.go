@@ -13,6 +13,8 @@ type Calculation struct {
 	CalculatedAt time.Time `gorm:"not null" json:"calculatedAt"`
 	Price        int       `gorm:"not null" json:"price"`
 	IsPaid       bool      `gorm:"not null" json:"isPaid"`
-	User         User      `gorm:"not null" json:"user"`
-	Team         Team      `gorm:"not null" json:"team"`
+	UserID       uint      `gorm:"not null"`
+	User         User      `gorm:"not null`
+	TeamID       uint      `gorm:"not null"`
+	Team         Team      `gorm:"not null"`
 }

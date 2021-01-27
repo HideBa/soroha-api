@@ -139,7 +139,7 @@ func (h *Handler) CalculateExpenses(c echo.Context) error {
 	}
 	var usersCals *model.Calculation
 	for _, calc := range calculations {
-		if calc.User.ID == userID {
+		if calc.UserID == userID {
 			usersCals = &calc
 		}
 	}
@@ -160,4 +160,14 @@ func (h *Handler) UpdateCalculation(c echo.Context) error {
 	}
 	err = h.expenseStore.UpdateCalculation(calculation)
 	return c.JSON(http.StatusOK, response.NewSingleCalculationResponse(c, calculation))
+}
+
+func (h *Handler) Calculations(c echo.Context) error {
+	var calculations []model.Calculation
+	teamName := c.Param("name")
+	err := h.expenseStore.CalculationsList(teamName, calculations)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, util.NewError(err))
+	}
+	return c.JSON(http.StatusOK, response.NewCalculationsListResponse(c, calculations))
 }

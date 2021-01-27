@@ -79,6 +79,10 @@ type SingleCalculationResponse struct {
 	Calculation CalculationReseponse `json:"calculation"`
 }
 
+type CalculationsListResponse struct {
+	calculations []CalculationReseponse `json:"calculations"`
+}
+
 func NewSingleCalculationResponse(c echo.Context, calc *model.Calculation) *SingleCalculationResponse {
 	calcRes := &SingleCalculationResponse{}
 	calcRes.Calculation.Slug = calc.Slug
@@ -88,4 +92,19 @@ func NewSingleCalculationResponse(c echo.Context, calc *model.Calculation) *Sing
 	calcRes.Calculation.UsersName = calc.User.Username
 	calcRes.Calculation.TeamName = calc.Team.TeamName
 	return calcRes
+}
+
+func NewCalculationsListResponse(c echo.Context, calculations []model.Calculation) *CalculationsListResponse {
+	calculationsRes := &CalculationsListResponse{}
+	for _, calc := range calculations {
+		calcRes := CalculationReseponse{}
+		calcRes.Slug = calc.Slug
+		calcRes.Price = calc.Price
+		calcRes.IsPaid = calc.IsPaid
+		calcRes.TeamName = calc.Team.TeamName
+		calcRes.UsersName = calc.User.Username
+		calcRes.CaluculatedAt = calc.CalculatedAt
+		calculationsRes.calculations = append(calculationsRes.calculations, calcRes)
+	}
+	return calculationsRes
 }

@@ -114,7 +114,7 @@ func (h *Handler) TeamUsersList(c echo.Context) error {
 
 func (h *Handler) AddUserOnTeam(c echo.Context) error {
 	var usersNames []string
-	teamName := c.Param("name")
+	teamName := c.Param("teamname")
 
 	team, err := h.userStore.TeamByName(teamName)
 	if err != nil {
