@@ -46,6 +46,14 @@ func (h *Handler) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.NewUserResponse(u))
 }
 
+func (h *Handler) List(c echo.Context) error {
+	users, err := h.userStore.List()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, util.NewError(err))
+	}
+	return c.JSON(http.StatusOK, response.UserListResponse(users))
+}
+
 func (h *Handler) CurrentUser(c echo.Context) error {
 	u, err := h.userStore.GetByID(userIDFromToken(c))
 	if err != nil {

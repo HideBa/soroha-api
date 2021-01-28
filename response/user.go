@@ -15,6 +15,14 @@ type UserResponse struct {
 	} `json:"user"`
 }
 
+type SimpleUserResponse struct {
+	Username string `json:"username"`
+}
+
+type SimpleUserListResponse struct {
+	Users []SimpleUserResponse `json:"users"`
+}
+
 type TeamResponse struct {
 	TeamName  string    `json:"teamName"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -38,6 +46,16 @@ func NewUserResponse(userModel *model.User) *UserResponse {
 	res := &UserResponse{}
 	res.User.Username = userModel.Username
 	res.User.Token = util.GenerateJWT(userModel.ID)
+	return res
+}
+
+func UserListResponse(users []model.User) *SimpleUserListResponse {
+	res := &SimpleUserListResponse{}
+	for _, user := range users {
+		simpleUser := &SimpleUserResponse{}
+		simpleUser.Username = user.Username
+		res.Users = append(res.Users, *simpleUser)
+	}
 	return res
 }
 

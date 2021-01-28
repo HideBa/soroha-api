@@ -13,6 +13,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	guestUsers := v1.Group("/users")
 	guestUsers.POST("/signup", h.SignUp)
 	guestUsers.POST("/signin", h.Login)
+	guestUsers.GET("/", h.UserList)
 
 	user := v1.Group("/user", jwtMiddleware)
 	user.GET("", h.CurrentUser)
