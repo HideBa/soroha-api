@@ -53,4 +53,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	expenses.DELETE("/:slug", h.DeleteExpense)
 
 	// calculations := v1.Group("/calculations", jwtMiddleware)
+
+	images := v1.Group("/file", jwtMiddleware)
+	images.POST("", h.SignHandler)
 }
