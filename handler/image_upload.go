@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"github.com/HideBa/soroha-api/response"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2/google"
@@ -44,18 +43,19 @@ func (h *Handler) SignHandler(c echo.Context) error {
 		Expires:        time.Now().Add(15 * time.Minute),
 		ContentType:    contentType,
 		SignBytes: func(b []byte) ([]byte, error) {
-			response, err := iamService.Projects.ServiceAccounts.SignBlob(serviceAccountID, &iam.SignBlobRequest{BytesToSign: base64.StdEncoding.EncodeToString(b)},).Context(c.Request().Context()).Do()
-		}
-		if err != nil {
-			return nil, err
-		}
-		return base64.StdEncoding.DecodeString(response.Signature)
+			response, err := iamService.Projects.ServiceAccounts.SignBlob(serviceAccountID, &iam.SignBlobRequest{BytesToSign: base64.StdEncoding.EncodeToString(b)}).Context(c.Request().Context()).Do()
+			if err != nil {
+				return nil, err
+			}
+			return base64.StdEncoding.DecodeString(response.Signature)
+		},
 	})
 	if err != nil {
 		log.Printf("sign: failed to sign, err = %v\n", err)
 		return c.JSON(http.StatusInternalServerError, "failure to sign")
 	}
-	return c.JSON(http.StatusOK)
+	fmt.Fprintln(c.Response().Writer, url)
+	return c.JSON(http.StatusOK, "ok")
 }
 
 func main() {
