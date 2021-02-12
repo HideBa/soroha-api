@@ -1,3 +1,7 @@
+// ========================================================
+// WIP: When you restart to develop this feature, please refer https://cloud.google.com/blog/ja/products/gcp/uploading-images-directly-to-cloud-storage-by-using-signed-url
+// ========================================================
+
 package handler
 
 import (
